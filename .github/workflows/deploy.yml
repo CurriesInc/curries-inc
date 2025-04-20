@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow only on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js if needed (Optional if using build tools like npm)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Change the version if necessary
+    
+    # Step 3: Install dependencies if using Node.js, or skip if you have static files
+    - name: Install dependencies
+      run: npm install  # Remove or modify if you're not using Node.js
+
+    # Step 4: Build your project if necessary (for example, if you have build tools like Webpack or Gulp)
+    - name: Build project
+      run: npm run build  # Remove or modify if you don't have a build process
+    
+    # Step 5: Deploy to GitHub Pages using GitHub Pages Action
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages  # The branch where the files will be deployed
+        folder: build  # Folder with your built site (if using build tools)
+        token: ${{ secrets.GITHUB_TOKEN }}  # Token for authentication
