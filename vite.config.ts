@@ -4,6 +4,7 @@ import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
+// This is necessary for dynamic imports and proper handling in Vite
 export default defineConfig({
   plugins: [
     react(),
@@ -23,12 +24,17 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "client", "src"),
       "@shared": path.resolve(import.meta.dirname, "shared"),
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-      "crypto": path.resolve(__dirname, 'node_modules/crypto-browserify'),
+      // Polyfill crypto for Node.js (to avoid browser-specific crypto APIs)
+      "crypto": path.resolve(__dirname, "node_modules/crypto-browserify"),  
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Ensure that we properly externalize dependencies for the Node.js build
+    rollupOptions: {
+      external: ['crypto'],  // Ensure `crypto` is treated as an external dependency during build
+    },
   },
 });
