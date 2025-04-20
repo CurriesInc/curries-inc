@@ -3,35 +3,36 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger the workflow only on pushes to the main branch
+      - main  # Trigger the workflow on push to the main branch
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
+  build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
     steps:
-    # Step 1: Checkout the repository
+    # Step 1: Checkout code from the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Node.js if needed (Optional if using build tools like npm)
+    # Step 2: Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Change the version if necessary
-    
-    # Step 3: Install dependencies if using Node.js, or skip if you have static files
-    - name: Install dependencies
-      run: npm install  # Remove or modify if you're not using Node.js
+        node-version: '16'  # Use a specific Node.js version (16 or higher)
 
-    # Step 4: Build your project if necessary (for example, if you have build tools like Webpack or Gulp)
-    - name: Build project
-      run: npm run build  # Remove or modify if you don't have a build process
-    
-    # Step 5: Deploy to GitHub Pages using GitHub Pages Action
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Step 4: Build the project (use esbuild and Vite)
+    - name: Build the project
+      run: |
+        npm run build  # Ensure this script runs your Vite + esbuild build process
+
+    # Step 5: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages  # The branch where the files will be deployed
-        folder: build  # Folder with your built site (if using build tools)
-        token: ${{ secrets.GITHUB_TOKEN }}  # Token for authentication
+        folder: dist  # The output folder (usually "dist" or wherever your build files are)
+        token: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for deployment
